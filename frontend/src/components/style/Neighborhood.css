@@ -1,0 +1,36 @@
+/* Error notification */
+.card-error {
+    color: #8B1A1A;
+    font-size: 1rem;
+    margin: 0.75rem 0 0;
+    font-weight: 700;
+    font-style: italic;
+}
+
+.neighborhood-container {
+    position: relative;
+    background-image: url('../../assets/backGround.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: top center;
+    /*display: flex;*/
+    justify-content: center;
+    align-items: center;
+
+    /*height: 100%;*/
+    aspect-ratio: 1266 / 976;
+    overflow: hidden;
+}
+
+.road {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+
+    /* Can be used to position/scale the road */
+    left: 0%;
+    top: 22%;
+    width: 100%;
+    height: auto;
+    z-index: 5;
+}
