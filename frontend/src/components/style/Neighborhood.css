@@ -7,21 +7,6 @@
     font-style: italic;
 }
 
-.neighborhood-container {
-    position: relative;
-    background-image: url('../../assets/backGround.png');
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: top center;
-    /*display: flex;*/
-    justify-content: center;
-    align-items: center;
-
-    /*height: 100%;*/
-    aspect-ratio: 1266 / 976;
-    overflow: hidden;
-}
-
 .road {
     position: absolute;
     inset: 0;

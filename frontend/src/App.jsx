@@ -24,11 +24,10 @@ function App() {
           </Panel>
         </aside>
 
-        <main
-          className="base-shell"
-          style={{ backgroundImage: `url(${backGround})` }}
-        >
-          <Neighborhood />
+        <main className="base-shell">
+          <div className='neighborhood-container'>
+            <Neighborhood />
+          </div>
         </main>
       </div>
     </div>

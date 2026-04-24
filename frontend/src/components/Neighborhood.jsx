@@ -8,7 +8,7 @@ function Neighborhood() {
     const [error, setError] = useState('')
 
     return (
-        <div className='neighborhood-container'>
+        <>
             {Object.entries(houseShapes).map(([id, shape]) => {
                 const left = shape.positionPercent?.x ?? 50
                 const top = shape.positionPercent?.y ?? 50
@@ -57,7 +57,7 @@ function Neighborhood() {
             </div>
             {/* Errors generated in house components are displayed here */}
             {error && <p className="card-error">{error}</p>}
-        </div>
+        </>
     )
 }
 
