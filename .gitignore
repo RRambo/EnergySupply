@@ -27,6 +27,8 @@ build/
 # React / Vite frontend
 # =========================
 
+pnpm-lock.yaml
+package-lock.json
 node_modules/
 dist/
 dist-ssr/
