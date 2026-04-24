@@ -1,6 +1,6 @@
 import { useState } from "react";
 import "./App.css";
-import HouseCard from "./components/house";
+import Neighborhood from "./components/Neighborhood";
 import backGround from "./assets/backGround.png";
 import Panel from "./components/panel";
 
@@ -28,21 +28,7 @@ function App() {
           className="base-shell"
           style={{ backgroundImage: `url(${backGround})` }}
         >
-          <HouseCard
-            residents={2}
-            hasEVehicle={true}
-            hasHeatPump={true}
-            hasSolarPanel={true}
-            optedIn={true}
-          />
-
-          <HouseCard
-            residents={1}
-            hasEVehicle={false}
-            hasHeatPump={false}
-            hasSolarPanel={false}
-            optedIn={false}
-          />
+          <Neighborhood />
         </main>
       </div>
     </div>
