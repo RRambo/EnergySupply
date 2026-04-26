@@ -18,17 +18,40 @@
     position: absolute;
     left: 70%;
     bottom: 110%;
-    background: rgba(255,255,255,0.97);
+    pointer-events: none;
+    background: rgba(255, 255, 255, 0.97);
     border: 1px solid #1976d2;
     border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
     box-sizing: border-box;
     padding: 1vh;
     color: #1976d2;
     font-size: 1rem;
     font-weight: 500;
-    pointer-events: none;
     z-index: 20;
+    opacity: 0;
+}
+
+.house-tooltip.no-flip {
+    transition: opacity 80ms ease-out;
+    opacity: 1;
+}
+
+.house-tooltip.flip-x {
+    left: auto;
+    right: 70%;
+    transform: translateX(0%);
+
+    transition: opacity 80ms ease-out;
+    opacity: 1;
+}
+
+.house-tooltip.flip-y {
+    bottom: auto;
+    top: 110%;
+
+    transition: opacity 80ms ease-out;
+    opacity: 1;
 }
 
 .stats-grid {

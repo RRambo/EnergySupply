@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import heatPumpIcon from '../assets/heatPumpIcon.png'
 import eVehicleIcon from '../assets/eVehicle.png'
 import './style/House.css'
@@ -21,6 +21,8 @@ function House({ houseNumber, shape, houseWidth, houseHeight, houseRotation, err
 
     const [showInfo, setShowInfo] = useState(false)
     const [loading, setLoading] = useState(false)
+
+    const infoboxRef = useRef(null)
 
     const fetchHouseInfo = async () => {
         try {
@@ -102,10 +104,45 @@ function House({ houseNumber, shape, houseWidth, houseHeight, houseRotation, err
         }
     }
 
+    const checkInfoboxLocation = () => {
+        // Flips the location of the house infobox relative to the house, if it appears offscreen
+        if (!showInfo || !infoboxRef.current) return
+
+        const tooltip = infoboxRef.current
+        tooltip.classList.remove('flip-x', 'flip-y', 'no-flip')
+
+        requestAnimationFrame(() => {
+            const rect = tooltip.getBoundingClientRect()
+
+            // Horizontal overflow
+            // window.innerWidth - 5 == 5px from the right side of the layout viewport
+            if (rect.right > window.innerWidth - 5) {
+                tooltip.classList.add('flip-x')
+            } else if (rect.left < 0) {
+                tooltip.classList.add('flip-x')
+            } else {
+                tooltip.classList.add('no-flip')
+            }
+
+            // Vertical overflow
+            if (rect.top < 100) {
+                tooltip.classList.add('flip-y')
+            } else if (rect.bottom > window.innerHeight - 5) {
+                tooltip.classList.add('flip-y')
+            } else {
+                tooltip.classList.add('no-flip')
+            }
+        })
+    }
+
     useEffect(() => {
         fetchHouseInfo()
         handleInfoChange()
     }, [houseNumber])
+
+    useEffect(() => {
+        checkInfoboxLocation()
+    }, [showInfo])
 
     const polygonPoints = shape.points.map(p => p.join(",")).join(" ")
 
@@ -164,120 +201,116 @@ function House({ houseNumber, shape, houseWidth, houseHeight, houseRotation, err
 
             {/* Infobox */}
             {showInfo && (
-                loading ? (
-                    <div>loading...</div>
-                ) : (
-                    <div className="house-tooltip">
-                        <div className="stats-grid">
-                            <div className="stat-column current">
-                                <div className="stat-title">CURRENT</div>
+                <div className={`house-tooltip ${loading ? 'hidden' : 'visible'}`} ref={infoboxRef}>
+                    <div className="stats-grid">
+                        <div className="stat-column current">
+                            <div className="stat-title">CURRENT</div>
 
-                                {/* Only displays power production if house has solar panel */}
-                                {sPanel && (
-                                    <div className="stat-row">
-                                        <span className="stat-label">Power Production</span>
-                                        <span className="stat-value">
-                                            <span className="num">{curPowerGen}</span>
-                                            <span className="unit">kWh</span>
-                                        </span>
-                                    </div>
-                                )}
-
+                            {/* Only displays power production if house has solar panel */}
+                            {sPanel && (
                                 <div className="stat-row">
-                                    <span className="stat-label">Power Consumption</span>
+                                    <span className="stat-label">Power Production</span>
                                     <span className="stat-value">
-                                        <span className="num">{curPowerCons}</span>
+                                        <span className="num">{curPowerGen}</span>
                                         <span className="unit">kWh</span>
                                     </span>
                                 </div>
+                            )}
 
-                                <div className="stat-row">
-                                    <span className="stat-label">Savings</span>
-                                    <span className="stat-value">
-                                        <span className="num">{curSavings}</span>
-                                        <span className="unit">€</span>
-                                    </span>
-                                </div>
+                            <div className="stat-row">
+                                <span className="stat-label">Power Consumption</span>
+                                <span className="stat-value">
+                                    <span className="num">{curPowerCons}</span>
+                                    <span className="unit">kWh</span>
+                                </span>
                             </div>
 
-                            <div className="stat-column total">
-                                <div className="stat-title">TOTAL</div>
-
-                                {/* Only displays power production if house has solar panel */}
-                                {sPanel && (
-                                    <div className="stat-row">
-                                        <span className="stat-label">Power Production</span>
-                                        <span className="stat-value">
-                                            <span className="num">{totalPowerGen}</span>
-                                            <span className="unit">kWh</span>
-                                        </span>
-                                    </div>
-                                )}
-
-                                <div className="stat-row">
-                                    <span className="stat-label">Power Consumption</span>
-                                    <span className="stat-value">
-                                        <span className="num">{totalPowerCons}</span>
-                                        <span className="unit">kWh</span>
-                                    </span>
-                                </div>
-
-                                <div className="stat-row">
-                                    <span className="stat-label">Savings</span>
-                                    <span className="stat-value">
-                                        <span className="num">{totalSavings}</span>
-                                        <span className="unit">€</span>
-                                    </span>
-                                </div>
+                            <div className="stat-row">
+                                <span className="stat-label">Savings</span>
+                                <span className="stat-value">
+                                    <span className="num">{curSavings}</span>
+                                    <span className="unit">€</span>
+                                </span>
                             </div>
                         </div>
 
-                        <div className='icons-row'>
-                            {/* Resident icon */}
-                            <svg
-                                width="30"
-                                height="30"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="#000"
-                                strokeWidth="1.8"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                style={{ position: "relative", overflow: "visible" }}
-                            >
-                                <circle cx="12" cy="8" r="4" />
-                                <path d="M4 20c0-4 4-6 8-6s8 2 8 6" />
+                        <div className="stat-column total">
+                            <div className="stat-title">TOTAL</div>
 
-                                {/* Number of residents */}
-                                <foreignObject x="12" y="12" width="14" height="14">
-                                    <div className="person-count"
-                                        style={{
-                                            background: "#67768b",
-                                            color: "#fff",
-                                            borderRadius: "50%",
-                                            width: "14px",
-                                            height: "14px",
-                                            fontSize: "8px",
-                                            alignItems: "center",
-                                            justifyContent: "center",
-                                            fontWeight: 650,
-                                        }}
-                                    >
-                                        {residents}
-                                    </div>
-                                </foreignObject>
-                            </svg>
+                            {/* Only displays power production if house has solar panel */}
+                            {sPanel && (
+                                <div className="stat-row">
+                                    <span className="stat-label">Power Production</span>
+                                    <span className="stat-value">
+                                        <span className="num">{totalPowerGen}</span>
+                                        <span className="unit">kWh</span>
+                                    </span>
+                                </div>
+                            )}
 
-                            {/* Heat Pump icon */}
-                            {heatPump && (<img className='small-icon' src={heatPumpIcon}></img>)}
+                            <div className="stat-row">
+                                <span className="stat-label">Power Consumption</span>
+                                <span className="stat-value">
+                                    <span className="num">{totalPowerCons}</span>
+                                    <span className="unit">kWh</span>
+                                </span>
+                            </div>
 
-                            {/* Electric Vehicle(s) icon */}
-                            {[...Array(ev)].map((_, i) => (
-                                <img key={i} className='small-icon' src={eVehicleIcon}></img>
-                            ))}
+                            <div className="stat-row">
+                                <span className="stat-label">Savings</span>
+                                <span className="stat-value">
+                                    <span className="num">{totalSavings}</span>
+                                    <span className="unit">€</span>
+                                </span>
+                            </div>
                         </div>
                     </div>
-                )
+
+                    <div className='icons-row'>
+                        {/* Resident icon */}
+                        <svg
+                            width="30"
+                            height="30"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="#000"
+                            strokeWidth="1.8"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            style={{ position: "relative", overflow: "visible" }}
+                        >
+                            <circle cx="12" cy="8" r="4" />
+                            <path d="M4 20c0-4 4-6 8-6s8 2 8 6" />
+
+                            {/* Number of residents */}
+                            <foreignObject x="12" y="12" width="14" height="14">
+                                <div className="person-count"
+                                    style={{
+                                        background: "#67768b",
+                                        color: "#fff",
+                                        borderRadius: "50%",
+                                        width: "14px",
+                                        height: "14px",
+                                        fontSize: "8px",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                        fontWeight: 650,
+                                    }}
+                                >
+                                    {residents}
+                                </div>
+                            </foreignObject>
+                        </svg>
+
+                        {/* Heat Pump icon */}
+                        {heatPump && (<img className='small-icon' src={heatPumpIcon}></img>)}
+
+                        {/* Electric Vehicle(s) icon */}
+                        {[...Array(ev)].map((_, i) => (
+                            <img key={i} className='small-icon' src={eVehicleIcon}></img>
+                        ))}
+                    </div>
+                </div>
             )}
         </div>
     )
