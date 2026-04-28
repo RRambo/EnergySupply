@@ -16,8 +16,9 @@
 /* House info box */
 .house-tooltip {
     position: absolute;
-    left: 70%;
+    left: 50%;
     bottom: 110%;
+    transform: translateX(-50%);
     pointer-events: none;
     background: rgba(255, 255, 255, 0.97);
     border: 1px solid #1976d2;
@@ -40,7 +41,7 @@
 .house-tooltip.flip-x {
     left: auto;
     right: 70%;
-    transform: translateX(0%);
+    transform: translateX(10%);
 
     transition: opacity 80ms ease-out;
     opacity: 1;
@@ -91,7 +92,7 @@
     flex: 1 1 auto;
     overflow: hidden;
     text-overflow: ellipsis;
-    text-align: right;
+    text-align: left;
 }
 
 .stat-value {
@@ -139,7 +140,7 @@
     font-weight: 700;
 }
 
-@media (max-width: 320px) {
+@media (max-width: 600px) {
     .house-tooltip {
         padding: 10px;
     }
@@ -153,9 +154,8 @@
     }
 
     .stat-row {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 2px;
+        display: flex;
+        gap: 4px;
     }
 
     .stat-value {

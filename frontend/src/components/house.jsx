@@ -105,7 +105,7 @@ function House({ houseNumber, shape, houseWidth, houseHeight, houseRotation, err
     }
 
     const checkInfoboxLocation = () => {
-        // Flips the location of the house infobox relative to the house, if it appears offscreen
+        // Flips the location of the house infobox relative to the house, if it appears too close to the edge of the viewport 
         if (!showInfo || !infoboxRef.current) return
 
         const tooltip = infoboxRef.current
@@ -115,7 +115,6 @@ function House({ houseNumber, shape, houseWidth, houseHeight, houseRotation, err
             const rect = tooltip.getBoundingClientRect()
 
             // Horizontal overflow
-            // window.innerWidth - 5 == 5px from the right side of the layout viewport
             if (rect.right > window.innerWidth - 5) {
                 tooltip.classList.add('flip-x')
             } else if (rect.left < 0) {
