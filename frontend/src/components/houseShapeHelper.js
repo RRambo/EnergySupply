@@ -5,6 +5,18 @@ solarPosition = position of solar panel relative to house
 positionPercent = position of house on the map
 */
 
+const calculateHouseSize = (points) => {
+  // Calculates the size of the house in pixels
+  const xs = points.map(p => p[0])
+  const ys = points.map(p => p[1])
+  const minX = Math.min(...xs)
+  const minY = Math.min(...ys)
+  const width = Math.max(...xs) - minX
+  const height = Math.max(...ys) - minY
+
+  return { width, height }
+}
+
 export const houseShapes = {
   "1": {
     // ∨∨∨ points [UL], [UR], [BR], [BL]
@@ -167,4 +179,11 @@ export const houseShapes = {
     solarPosition: { x: 25, y: 20 },
     positionPercent: { x: 32, y: 54 }
   }
-};
+}
+
+// Adds the houseSizes in pixels to the objects in the helper list
+Object.values(houseShapes).forEach(shape => {
+  const box = calculateHouseSize(shape.points)
+  shape.width = box.width
+  shape.height = box.height
+})

@@ -10,17 +10,8 @@ function Neighborhood() {
     return (
         <>
             {Object.entries(houseShapes).map(([id, shape]) => {
-                const left = shape.positionPercent?.x ?? 50
-                const top = shape.positionPercent?.y ?? 50
-                const rotation = shape.rotation ?? 0
-
-                // Calculates the size of the house in pixels
-                const xs = shape.points.map(p => p[0])
-                const ys = shape.points.map(p => p[1])
-                const minX = Math.min(...xs)
-                const minY = Math.min(...ys)
-                const width = Math.max(...xs) - minX
-                const height = Math.max(...ys) - minY
+                const left = shape.positionPercent.x
+                const top = shape.positionPercent.y
 
                 return (
                     <div key={id}
@@ -35,9 +26,9 @@ function Neighborhood() {
                         <House
                             houseNumber={id}
                             shape={shape}
-                            houseWidth={width}
-                            houseHeight={height}
-                            houseRotation={`rotate(${rotation}deg)`}
+                            houseWidth={shape.width}
+                            houseHeight={shape.height}
+                            houseRotation={`rotate(${shape.rotation}deg)`}
                             error={error}
                             setError={setError}
                         />
@@ -54,6 +45,7 @@ function Neighborhood() {
                         <rect x="519.72" y="315.212" width="346.968" height="34.0875" rx="17.0438" transform="rotate(-90.8936 559.72 325.212)" fill="#DBD8D8" />
                     </g>
                 </svg>
+                
             </div>
             {/* Errors generated in house components are displayed here */}
             {error && <p className="card-error">{error}</p>}
