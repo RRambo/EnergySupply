@@ -158,18 +158,23 @@ function House({ houseNumber, shape, houseWidth, houseHeight, houseRotation, err
             }}
         >
             {/* House SVG */}
-            <svg viewBox={`0 0 ${houseWidth} ${houseHeight}`} fill="none" xmlns="http://www.w3.org/2000/svg"
+            <svg viewBox={`0 0 ${houseWidth + 4} ${houseHeight + 4}`} fill="none" xmlns="http://www.w3.org/2000/svg"
                 style={{
                     transform: houseRotation,
-                    width: `${houseWidth}px`,
-                    height: `${houseHeight}px`
+                    width: `${houseWidth + 4}px`,
+                    height: `${houseHeight + 4}px`
                 }}
             >
+                {/* Drop shadow */}
+                <polygon
+                    points={polygonPoints}
+                    fill="rgba(0,0,0,0.25)"
+                    transform="translate(4,4)"
+                />
+
                 <polygon
                     points={polygonPoints}
                     fill={optedIn ? "#8bb4ff" : "#828282"}
-                    stroke="#000"
-                    strokeWidth="2"
                 />
 
                 {/* Solar panel */}
@@ -267,46 +272,66 @@ function House({ houseNumber, shape, houseWidth, houseHeight, houseRotation, err
 
                     <div className='icons-row'>
                         {/* Resident icon */}
-                        <svg
-                            width="30"
-                            height="30"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="#000"
-                            strokeWidth="1.8"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            style={{ position: "relative", overflow: "visible" }}
-                        >
-                            <circle cx="12" cy="8" r="4" />
-                            <path d="M4 20c0-4 4-6 8-6s8 2 8 6" />
-
-                            {/* Number of residents */}
-                            <foreignObject x="12" y="12" width="14" height="14">
-                                <div className="person-count"
-                                    style={{
-                                        background: "#67768b",
-                                        color: "#fff",
-                                        borderRadius: "50%",
-                                        width: "14px",
-                                        height: "14px",
-                                        fontSize: "8px",
-                                        alignItems: "center",
-                                        justifyContent: "center",
-                                        fontWeight: 650,
-                                    }}
+                        {/* If there are less than 5 residents show them as icons, otherwise show one avatar with a number */}
+                        {residents < 5
+                            ? [...Array(residents)].map((_, i) => (
+                                <svg
+                                    key={i}
+                                    width="26"
+                                    height="26"
+                                    viewBox="0 2 21 21"
+                                    fill="none"
+                                    stroke="#000"
+                                    strokeWidth="1.6"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
                                 >
-                                    {residents}
-                                </div>
-                            </foreignObject>
-                        </svg>
+                                    <circle cx="10" cy="8" r="4" />
+                                    <path d="M2 20c0-4 4-6 8-6s8 2 8 6" />
+                                </svg>
+                            ))
+                            : (
+                                <svg
+                                    width="30"
+                                    height="30"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="#000"
+                                    strokeWidth="1.8"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    style={{ position: "relative", overflow: "visible",  marginRight: "2px" }}
+                                >
+                                    <circle cx="12" cy="8" r="4" />
+                                    <path d="M4 20c0-4 4-6 8-6s8 2 8 6" />
+
+                                    {/* Number of residents */}
+                                    <foreignObject x="12" y="12" width="14" height="14">
+                                        <div className="person-count"
+                                            style={{
+                                                background: "#67768b",
+                                                color: "#fff",
+                                                borderRadius: "50%",
+                                                width: "14px",
+                                                height: "14px",
+                                                fontSize: "8px",
+                                                alignItems: "center",
+                                                justifyContent: "center",
+                                                fontWeight: 650,
+                                            }}
+                                        >
+                                            {residents}
+                                        </div>
+                                    </foreignObject>
+                                </svg>
+                            )}
 
                         {/* Heat Pump icon */}
                         {heatPump && (<img className='small-icon' src={heatPumpIcon}></img>)}
 
                         {/* Electric Vehicle(s) icon */}
                         {[...Array(ev)].map((_, i) => (
-                            <img key={i} className='small-icon' src={eVehicleIcon}></img>
+                            <img key={i} className='small-icon' src={eVehicleIcon} style={{ marginRight: i === 0 && ev <= 1 ? 0 : '4px' }}></img>
                         ))}
                     </div>
                 </div>

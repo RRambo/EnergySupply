@@ -113,11 +113,10 @@
 
 .icons-row {
     display: flex;
-    gap: 4px;
+    /*gap: 4px;*/
     justify-content: center;
     align-items: center;
     padding-top: 6px;
-    border-top: 1px dashed rgba(0, 0, 0, 0.06);
 }
 
 .small-icon {
