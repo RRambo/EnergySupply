@@ -43,7 +43,7 @@ export const houseShapes = {
     // ∨∨∨ points [↖], [↗], [↘], [↙]
     points: [[0, 0], [65, 0], [63, 81], [0, 80]],
     rotation: 6,
-    solarPosition: { x: 25, y: 40 },
+    solarPosition: { x: 23, y: 35 },
     positionPercent: { x: 45, y: 84 }
   },
   "9": {

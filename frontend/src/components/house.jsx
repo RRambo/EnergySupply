@@ -3,106 +3,18 @@ import heatPumpIcon from '../assets/heatPumpIcon.png'
 import eVehicleIcon from '../assets/eVehicle.png'
 import './style/House.css'
 
-function House({ houseNumber, shape, houseWidth, houseHeight, houseRotation, error, setError }) {
-    // House data (used for icons in hoverbox)
-    const [residents, setResidents] = useState(0)
-    const [ev, setEv] = useState(0)
-    const [heatPump, setHeatPump] = useState(false)
-    const [sPanel, setSPanel] = useState(false)
-    const [optedIn, setOptedIn] = useState(false)
+function House({
+    houseNumber,
+    shape,
+    houseWidth,
+    houseHeight,
+    houseRotation,
 
-    // Hoverbox info 
-    const [curPowerGen, setCurPowerGen] = useState(0.0)
-    const [curPowerCons, setCurPowerCons] = useState(0.0)
-    const [curSavings, setCurSavings] = useState(0.0)
-    const [totalPowerGen, setTotalPowerGen] = useState(0.0)
-    const [totalPowerCons, setTotalPowerCons] = useState(0.0)
-    const [totalSavings, setTotalSavings] = useState(0.0)
-
+    householdData,
+    householdPowerData
+}) {
     const [showInfo, setShowInfo] = useState(false)
-    const [loading, setLoading] = useState(false)
-
     const infoboxRef = useRef(null)
-
-    const fetchHouseInfo = async () => {
-        try {
-            setLoading(true)
-            /* fetch house data from backend, then set them below ∨∨∨
-
-            const res = await fetch(`/api/house/${houseNumber}`)
-            const data = await res.json()
-            
-            if (!res.ok) {
-                setError(data.error)
-                return
-            } else {
-                setResidents(data.people)
-                setEv(data.ev)
-                setHeatPump(data.heat_pump)
-                setSPanel(data.solar_p)
-                setOptedIn(data.opted)
-            }
-            */
-
-            // mocked values for testing
-            setResidents(12)
-            setEv(2)
-            setHeatPump(true)
-            setSPanel(true)
-
-            setOptedIn(false)
-        } catch {
-            setError('Connection error')
-        } finally {
-            setLoading(false)
-        }
-    }
-
-    const handleInfoChange = async (clicked) => {
-        try {
-            setLoading(true)
-            if (clicked) optedIn ? setOptedIn(false) : setOptedIn(true)
-            /* fetch house data (powerGen, powerConsumption...) from backend, then set them below ∨∨∨
-
-            const res = await fetch(`/api/day/house/${houseNumber}`)
-            const data = await res.json()
-            
-            if (!res.ok) {
-                setError(data.error)
-                return
-            } else {
-                setCurPowerConsumption(data?.cur_power_cons)
-                setCurSavings(data?.cur_savings)
-
-                setTotalPowerConsumption(data?.total_power_cons)
-                setTotalSavings(data?.total_savings)
-
-                if (data?.solar_p || sPanel) {
-                    setCurPowerGen(data?.cur_power_gen)
-                    setTotalPowerGen(data?.total_power_gen)
-                }
-            }
-            */
-
-            // mocked values for testing
-            setCurPowerCons(12.8)
-            setCurSavings(3.4)
-
-            setTotalPowerCons(112.8)
-            setTotalSavings(13.4)
-
-            // I think there might be a race condition where sPanel may not be set at this point on first render.
-            // Might be better to use the fetched house data (data.solar_p) directly instead
-            if (sPanel) {
-                setCurPowerGen(5.2)
-                setTotalPowerGen(10.2)
-            }
-        } catch {
-            setError('Connection error')
-        } finally {
-            setLoading(false)
-        }
-    }
 
     const checkInfoboxLocation = () => {
         // Flips the location of the house infobox relative to the house, if it appears too close to the edge of the viewport 
@@ -135,11 +47,6 @@ function House({ houseNumber, shape, houseWidth, houseHeight, houseRotation, err
     }
 
     useEffect(() => {
-        fetchHouseInfo()
-        handleInfoChange()
-    }, [houseNumber])
-
-    useEffect(() => {
         checkInfoboxLocation()
     }, [showInfo])
 
@@ -150,7 +57,6 @@ function House({ houseNumber, shape, houseWidth, houseHeight, houseRotation, err
             className="house-icon"
             onMouseEnter={() => setShowInfo(true)}
             onMouseLeave={() => setShowInfo(false)}
-            onClick={handleInfoChange}
             style={{
                 position: 'absolute',
                 width: `${houseWidth}px`,
@@ -174,11 +80,11 @@ function House({ houseNumber, shape, houseWidth, houseHeight, houseRotation, err
 
                 <polygon
                     points={polygonPoints}
-                    fill={optedIn ? "#8bb4ff" : "#828282"}
+                    fill={householdData.opted ? "#828282" : "#D9D9D9"}
                 />
 
                 {/* Solar panel */}
-                {sPanel && (
+                {householdData.solar_p && (
                     <g transform={`translate(${shape.solarPosition.x} ${shape.solarPosition.y})`}>
                         <rect
                             x="0.75"
@@ -205,17 +111,17 @@ function House({ houseNumber, shape, houseWidth, houseHeight, houseRotation, err
 
             {/* Infobox */}
             {showInfo && (
-                <div className={`house-tooltip ${loading ? 'hidden' : 'visible'}`} ref={infoboxRef}>
+                <div className={'house-tooltip'} ref={infoboxRef}>
                     <div className="stats-grid">
                         <div className="stat-column current">
                             <div className="stat-title">CURRENT</div>
 
                             {/* Only displays power production if house has solar panel */}
-                            {sPanel && (
+                            {householdData.solar_p && (
                                 <div className="stat-row">
                                     <span className="stat-label">Power Production</span>
                                     <span className="stat-value">
-                                        <span className="num">{curPowerGen}</span>
+                                        <span className="num">{householdPowerData.cur_power_gen}</span>
                                         <span className="unit">kWh</span>
                                     </span>
                                 </div>
@@ -224,29 +130,43 @@ function House({ houseNumber, shape, houseWidth, houseHeight, houseRotation, err
                             <div className="stat-row">
                                 <span className="stat-label">Power Consumption</span>
                                 <span className="stat-value">
-                                    <span className="num">{curPowerCons}</span>
+                                    <span className="num">{householdPowerData.cur_power_cons}</span>
                                     <span className="unit">kWh</span>
                                 </span>
                             </div>
 
-                            <div className="stat-row">
-                                <span className="stat-label">Savings</span>
-                                <span className="stat-value">
-                                    <span className="num">{curSavings}</span>
-                                    <span className="unit">€</span>
-                                </span>
-                            </div>
+                            {householdData.solar_p
+                                ? (
+                                    <div className="stat-row">
+                                        <span className="stat-label">Gains</span>
+                                        
+                                        <span className="stat-value">
+                                            <span className="num">{householdPowerData.cur_gains}</span>
+                                            <span className="unit">€</span>
+                                        </span>
+                                    </div>
+                                )
+                                : (
+                                    <div className="stat-row">
+                                        <span className="stat-label">Savings</span>
+                                        <span className="stat-value">
+                                            <span className="num">{householdPowerData.cur_savings}</span>
+                                            <span className="unit">€</span>
+                                        </span>
+                                    </div>
+                                )
+                            }
                         </div>
 
                         <div className="stat-column total">
-                            <div className="stat-title">TOTAL</div>
+                            <div className="stat-title">TOTAL FOR THE DAY</div>
 
                             {/* Only displays power production if house has solar panel */}
-                            {sPanel && (
+                            {householdData.solar_p && (
                                 <div className="stat-row">
                                     <span className="stat-label">Power Production</span>
                                     <span className="stat-value">
-                                        <span className="num">{totalPowerGen}</span>
+                                        <span className="num">{householdPowerData.total_power_gen}</span>
                                         <span className="unit">kWh</span>
                                     </span>
                                 </div>
@@ -255,26 +175,40 @@ function House({ houseNumber, shape, houseWidth, houseHeight, houseRotation, err
                             <div className="stat-row">
                                 <span className="stat-label">Power Consumption</span>
                                 <span className="stat-value">
-                                    <span className="num">{totalPowerCons}</span>
+                                    <span className="num">{householdPowerData.total_power_cons}</span>
                                     <span className="unit">kWh</span>
                                 </span>
                             </div>
 
-                            <div className="stat-row">
-                                <span className="stat-label">Savings</span>
-                                <span className="stat-value">
-                                    <span className="num">{totalSavings}</span>
-                                    <span className="unit">€</span>
-                                </span>
-                            </div>
+                            {householdData.solar_p
+                                ? (
+                                    <div className="stat-row">
+                                        <span className="stat-label">Gains</span>
+                                        <span className="stat-value">
+                                            <span className="num">{householdPowerData.total_gains}</span>
+                                            <span className="unit">€</span>
+                                        </span>
+                                    </div>
+                                    
+                                )
+                                : (
+                                    <div className="stat-row">
+                                        <span className="stat-label">Savings</span>
+                                        <span className="stat-value">
+                                            <span className="num">{householdPowerData.total_savings}</span>
+                                            <span className="unit">€</span>
+                                        </span>
+                                    </div>
+                                )
+                            }
                         </div>
                     </div>
 
                     <div className='icons-row'>
                         {/* Resident icon */}
                         {/* If there are less than 5 residents show them as icons, otherwise show one avatar with a number */}
-                        {residents < 5
-                            ? [...Array(residents)].map((_, i) => (
+                        {householdData.people < 5
+                            ? [...Array(householdData.people)].map((_, i) => (
                                 <svg
                                     key={i}
                                     width="26"
@@ -320,18 +254,23 @@ function House({ houseNumber, shape, houseWidth, houseHeight, houseRotation, err
                                                 fontWeight: 650,
                                             }}
                                         >
-                                            {residents}
+                                            {householdData.people}
                                         </div>
                                     </foreignObject>
                                 </svg>
                             )}
 
                         {/* Heat Pump icon */}
-                        {heatPump && (<img className='small-icon' src={heatPumpIcon}></img>)}
+                        {householdData.heat_pump && (<img className='small-icon' src={heatPumpIcon}></img>)}
 
                         {/* Electric Vehicle(s) icon */}
-                        {[...Array(ev)].map((_, i) => (
-                            <img key={i} className='small-icon' src={eVehicleIcon} style={{ marginRight: i === 0 && ev <= 1 ? 0 : '4px' }}></img>
+                        {[...Array(householdData.ev)].map((_, i) => (
+                            <img key={i} className='small-icon' src={eVehicleIcon}
+                                style={{
+                                    marginRight: i === 0 && householdData.ev <= 1 ? 0 : '4px',
+                                    marginLeft: householdData.heat_pump ? 0 : '4px',
+                                }}>
+                            </img>
                         ))}
                     </div>
                 </div>
