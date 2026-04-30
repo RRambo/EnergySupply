@@ -206,26 +206,9 @@ function House({
 
                     <div className='icons-row'>
                         {/* Resident icon */}
-                        {/* If there are less than 5 residents show them as icons, otherwise show one avatar with a number */}
-                        {householdData.people < 5
-                            ? [...Array(householdData.people)].map((_, i) => (
-                                <svg
-                                    key={i}
-                                    width="26"
-                                    height="26"
-                                    viewBox="0 2 21 21"
-                                    fill="none"
-                                    stroke="#000"
-                                    strokeWidth="1.6"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                >
-                                    <circle cx="10" cy="8" r="4" />
-                                    <path d="M2 20c0-4 4-6 8-6s8 2 8 6" />
-                                </svg>
-                            ))
-                            : (
-                                <svg
+                        {householdData.people > 1
+                            ? (
+                                 <svg
                                     width="30"
                                     height="30"
                                     viewBox="0 0 24 24"
@@ -241,37 +224,49 @@ function House({
 
                                     {/* Number of residents */}
                                     <foreignObject x="12" y="12" width="14" height="14">
-                                        <div className="person-count"
-                                            style={{
-                                                background: "#67768b",
-                                                color: "#fff",
-                                                borderRadius: "50%",
-                                                width: "14px",
-                                                height: "14px",
-                                                fontSize: "8px",
-                                                alignItems: "center",
-                                                justifyContent: "center",
-                                                fontWeight: 650,
-                                            }}
-                                        >
+                                        <div className="icon-count person-count">
                                             {householdData.people}
                                         </div>
                                     </foreignObject>
+                                </svg>
+                            )
+                            : (
+                               <svg
+                                    width="26"
+                                    height="26"
+                                    viewBox="0 2 21 21"
+                                    fill="none"
+                                    stroke="#000"
+                                    strokeWidth="1.6"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                >
+                                    <circle cx="10" cy="8" r="4" />
+                                    <path d="M2 20c0-4 4-6 8-6s8 2 8 6" />
                                 </svg>
                             )}
 
                         {/* Heat Pump icon */}
                         {householdData.heat_pump && (<img className='small-icon' src={heatPumpIcon}></img>)}
 
-                        {/* Electric Vehicle(s) icon */}
-                        {[...Array(householdData.ev)].map((_, i) => (
-                            <img key={i} className='small-icon' src={eVehicleIcon}
-                                style={{
-                                    marginRight: i === 0 && householdData.ev <= 1 ? 0 : '4px',
-                                    marginLeft: householdData.heat_pump ? 0 : '4px',
-                                }}>
-                            </img>
-                        ))}
+                        {/* Electric Vehicle icon */}
+                        {householdData.ev > 0 && (
+                            <div style={{ position: 'relative', display: 'flex' }}>
+                                <img className='small-icon' src={eVehicleIcon}
+                                    style={{ marginLeft: householdData.heat_pump ? 0 : '4px' }}>
+                                </img>
+                                {/* Number of electric vehicles */}
+                                {householdData.ev > 1 && (
+                                    <div className="icon-count ev-count" style={{
+                                        position: 'absolute',
+                                        top: '11px',
+                                        left: '17px'
+                                    }}>
+                                        {householdData.ev}
+                                    </div>
+                                )}
+                            </div>
+                        )}
                     </div>
                 </div>
             )}
