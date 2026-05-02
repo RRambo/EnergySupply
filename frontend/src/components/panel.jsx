@@ -1,4 +1,4 @@
-import "./panel.css";
+import "./style/panel.css";
 
 const Panel = ({ width, height, children }) => {
   const style = {
