@@ -30,7 +30,7 @@ function Neighborhood() {
                 {
                     id: '1',
                     solar_p: true,
-                    people: 4,
+                    people: 1,
                     heat_pump: true,
                     ev: 0,
                     opted: true
@@ -38,7 +38,7 @@ function Neighborhood() {
                 {
                     id: '3',
                     solar_p: false,
-                    people: 6,
+                    people: 2,
                     heat_pump: false,
                     ev: 1,
                     opted: false
