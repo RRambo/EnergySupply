@@ -5,6 +5,10 @@ os.environ["DB_PATH"] = "houses_test.db"
 from fastapi.testclient import TestClient
 from src.main import app
 
+# run with
+#   $env:PYTHONPATH="backend"
+#   pytest
+
 client = TestClient(app)
 
 
