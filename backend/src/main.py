@@ -8,8 +8,8 @@ app = FastAPI()  # start with:  uvicorn src.main:app --reload
 
 
 class GridUpdate(BaseModel):
-    id: str = Field(example="7")
-    in_grid: bool = Field(example=True)
+    id: str = Field(json_schema_extra={"example": "7"})
+    in_grid: bool = Field(json_schema_extra={"example": True})
 
 
 @app.get("/")
@@ -39,4 +39,4 @@ def update_grid(data: GridUpdate):
     if not success:
         raise HTTPException(status_code=404, detail="House not found")
 
-    return {"message": "Grid status updated"}
+    return {"message": "Grid status updated", "id": data.id, "in_grid": data.in_grid}
