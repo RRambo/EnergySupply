@@ -1,7 +1,9 @@
 import json
 from datetime import datetime
+import os
 
-PATH = "backend/data/avg_daily_data.json"
+BASE_DIR = os.path.dirname(os.path.dirname(__file__))
+PATH = os.path.join(BASE_DIR, "data", "avg_daily_data.json")
 
 _cached_data = None
 
