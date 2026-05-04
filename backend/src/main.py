@@ -1,10 +1,20 @@
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 from src.database import update_grid_status, get_all_houses
 from src.houses_detailed_info import generate_houses_details
 from src.panel_info import generate_panel_details
 
 app = FastAPI()  # start with:  uvicorn src.main:app --reload
+
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"], # Im echten Projekt hier ["http://localhost:5173"]
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 class GridUpdate(BaseModel):
