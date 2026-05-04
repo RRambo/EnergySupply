@@ -1,7 +1,7 @@
 import json
-from utils.calculations import calculate_grid_state, DEFAULTS
-from day_data import get_daily_data
-from main import get_all_houses
+from src.utils.calculations import calculate_grid_state, DEFAULTS
+from src.day_data import get_daily_data
+from src.database import get_all_houses
 
 def load_avg_daily_data(path: str = "backend/data/avg_daily_data.json") -> list[dict]:
     with open(path, "r", encoding="utf-8") as file:
