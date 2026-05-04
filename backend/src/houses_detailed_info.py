@@ -1,41 +1,63 @@
-import random
 from src.database import get_all_houses
-
-
-def generate_house_currents(house_id: str, day: int):
-    return {
-        "cur_power_gen": round(random.uniform(5, 20), 2),
-        "cur_power_cons": round(random.uniform(3, 15), 2),
-        "cur_savings": round(random.uniform(0, 5), 2),
-        "cur_gains": round(random.uniform(0, 3), 2),
-    }
-
-
-def generate_house_totals(house_id: str):
-    return {
-        "total_power_gen": round(random.uniform(1000, 5000), 2),
-        "total_power_cons": round(random.uniform(800, 4000), 2),
-        "total_savings": round(random.uniform(100, 800), 2),
-        "total_gains": round(random.uniform(50, 500), 2),
-    }
+from utils.calculations import calculate_current_consumption
+from utils.calculations import calculate_current_generation
+from utils.calculations import calculate_house_savings
+from day_data import get_daily_data
 
 
 def generate_houses_details():
-    houses_rows = get_all_houses()
-    house_ids = [h["id"] for h in houses_rows]
-
-    house_totals = {house_id: generate_house_totals(house_id) for house_id in house_ids}
-
+    houses = get_all_houses()
     houses_details = []
+    total_values = {
+        house["id"]: {
+            "total_power_gen": 0.0,
+            "total_power_cons": 0.0,
+            "total_savings": 0.0,
+            "total_gains": 0.0
+        }
+        for house in houses
+    }
 
     for day in range(1, 366):
-        day_entry = {"day": day, "houses": {}}
+        daily_data = get_daily_data(day)
+        temperature = daily_data["temperature"]
+        solar_radiation = daily_data["solar_radiation"]
+        current_grid_price = daily_data["current_grid_price"]
+        calculated_houses = []
 
-        for house_id in house_ids:
-            day_data = generate_house_currents(house_id, day)
-            day_data.update(house_totals[house_id])
-            day_entry["houses"][house_id] = day_data
+        for house in houses:
+            current_generation = calculate_current_generation(house, solar_radiation)
+            current_consumption = calculate_current_consumption(house, temperature)
+
+            calculated_houses.append(
+                {
+                    **house,
+                    "current_generation": current_generation,
+                    "current_consumption": current_consumption,
+                }
+            )
+
+        houses_with_savings = calculate_house_savings(calculated_houses, current_grid_price)
+
+        day_entry = {"day": day,"houses": {}}
+
+        for house in houses_with_savings:
+            house_id = house["id"]
+            total_values[house_id]["total_power_gen"] += house["current_generation"]
+            total_values[house_id]["total_power_cons"] += house["current_consumption"]
+            total_values[house_id]["total_savings"] += house["current_savings"]
+            total_values[house_id]["total_gains"] += house["current_gains"]
+            
+            day_entry["houses"][house_id] = {
+                "cur_power_gen": round(house["current_generation"], 2),
+                "cur_power_cons": round(house["current_consumption"], 2),
+                "cur_savings": round(house["current_savings"], 2),
+                "cur_gains": round(house["current_gains"], 2),
+                "total_power_gen": round(total_values[house_id]["total_power_gen"], 2),
+                "total_power_cons": round(total_values[house_id]["total_power_cons"], 2),
+                "total_savings": round(total_values[house_id]["total_savings"], 2),
+                "total_gains": round(total_values[house_id]["total_gains"], 2)
+            }
 
         houses_details.append(day_entry)
-
     return houses_details
