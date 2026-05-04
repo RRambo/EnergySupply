@@ -4,9 +4,8 @@ from typing import List, Dict, Any
 DEFAULTS = {
     "installed_power_kwp": 8,
     "performance_ratio": 0.8,
-    "installed_power_kwp": 5,
     "average_german_price": 0.40,
-    "base_grid_price": 0.30,
+    "base_grid_price": 0.105,
     "min_grid_price": 0.08,
     "max_grid_price": 0.50,
     "price_sensitivity": 0.5,
@@ -23,7 +22,6 @@ def clamp(value: float, min_value: float, max_value: float) -> float:
     return min(max(value, min_value), max_value)
 
 
-# need
 def calculate_current_generation(
     house: Dict[str, Any], solar_radiation: float, config: Dict[str, Any] = DEFAULTS
 ) -> float:
@@ -32,7 +30,7 @@ def calculate_current_generation(
 
     return (
         solar_radiation * config["installed_power_kwp"] * config["performance_ratio"]
-    )  # is is per day?
+    )
 
 
 def calculate_person_consumption(
@@ -65,10 +63,9 @@ def calculate_heat_pump_consumption(
     )
 
 
-# need
 def calculate_current_consumption(
     house: Dict[str, Any], temperature: float, config: Dict[str, Any] = DEFAULTS
-) -> Dict[str, float]:
+) -> float:
     person_consumption = calculate_person_consumption(house.get("persons", 0), config)
 
     ev_consumption = calculate_ev_consumption(
@@ -79,13 +76,10 @@ def calculate_current_consumption(
         house.get("has_heat_pump", False), temperature, config
     )
 
-    return (
-        person_consumption + ev_consumption + heat_pump_consumption
-    )  # returns float not dict?
+    total_consumption = person_consumption + ev_consumption + heat_pump_consumption
 
+    return total_consumption
 
-# need
-# houses dont have "current_generation" --> store it new json/form
 def calculate_grid_totals(houses: List[Dict[str, Any]]) -> Dict[str, float]:
     total_generation = 0.0
     total_consumption = 0.0
@@ -103,12 +97,10 @@ def calculate_grid_totals(houses: List[Dict[str, Any]]) -> Dict[str, float]:
     }
 
 
-# need --> based on calculate_grid_totals?
 def calculate_net_flow(total_generation: float, total_consumption: float) -> float:
     return total_generation - total_consumption
 
 
-# need --> based on calculate_net_flow and calculate_grid_totals?
 def calculate_current_price(
     net_flow: float, total_consumption: float, config: Dict[str, Any] = DEFAULTS
 ) -> float:
@@ -123,9 +115,6 @@ def calculate_current_price(
 
     return clamp(raw_price, config["min_grid_price"], config["max_grid_price"])
 
-
-# houses wont have "part_of_grid" and "current_generation", "current_consumption" --> info is not sored in normal json
-# still have to talk about
 def calculate_house_savings(
     houses: List[Dict[str, Any]],
     current_grid_price: float,
@@ -197,7 +186,6 @@ def calculate_house_savings(
     return result
 
 
-# still have to talk about
 def calculate_grid_state(
     houses: List[Dict[str, Any]],
     solar_radiation: float,
@@ -211,14 +199,13 @@ def calculate_grid_state(
             house, solar_radiation, config
         )
 
-        consumption_details = calculate_current_consumption(house, temperature, config)
+        current_consumption = calculate_current_consumption(house, temperature, config)
 
         calculated_houses.append(
             {
                 **house,
                 "current_generation": current_generation,
-                "current_consumption": consumption_details["total_consumption"],
-                "consumption_details": consumption_details,
+                "current_consumption": current_consumption,
             }
         )
 
@@ -232,12 +219,7 @@ def calculate_grid_state(
         net_flow, totals["total_consumption"], config
     )
 
-    houses_with_savings = calculate_house_savings(
-        calculated_houses, current_grid_price, config
-    )
-
     return {
-        "houses": houses_with_savings,
         "total_generation": totals["total_generation"],
         "total_consumption": totals["total_consumption"],
         "net_flow": net_flow,

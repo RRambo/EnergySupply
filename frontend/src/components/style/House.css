@@ -1,7 +1,8 @@
 /* House icon */
 .house-icon {
-    width: auto;
-    height: auto;
+    position: absolute;
+    width: 100%;
+    height: 100%;
     cursor: pointer;
     display: inline-block;
     transition: transform 0.2s;
@@ -10,7 +11,7 @@
 
 .house-icon:hover {
     transform: scale(1.05);
-    z-index: 30;
+    z-index: 300;
 }
 
 /* House info box */

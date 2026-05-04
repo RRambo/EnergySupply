@@ -3,11 +3,15 @@ import json
 import os
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-DB_PATH = os.path.join(BASE_DIR, "..", "houses.db")
+# DB_PATH = os.path.join(BASE_DIR, "..", "houses.db")
+
+
+def get_db_path():
+    return os.path.join(BASE_DIR, "..", os.getenv("DB_PATH", "houses.db"))
 
 
 def create_db():
-    conn = sqlite3.connect(DB_PATH)
+    conn = sqlite3.connect(get_db_path())
     cursor = conn.cursor()
 
     cursor.execute("""
@@ -26,7 +30,7 @@ def create_db():
 
 
 def initial_data():
-    conn = sqlite3.connect(DB_PATH)
+    conn = sqlite3.connect(get_db_path())
     cursor = conn.cursor()
 
     with open("backend/data/houses.json") as f:
@@ -48,7 +52,7 @@ def initial_data():
 def update_grid_status(
     house_id: str, in_grid: bool
 ):  # needs {"house_id": 7, "in_grid": True}
-    conn = sqlite3.connect(DB_PATH)
+    conn = sqlite3.connect(get_db_path())
     cursor = conn.cursor()
 
     cursor.execute(
@@ -66,7 +70,7 @@ def update_grid_status(
 
 
 def get_all_houses():
-    conn = sqlite3.connect(DB_PATH)
+    conn = sqlite3.connect(get_db_path())
     cursor = conn.cursor()
 
     cursor.execute("SELECT id, solar_p, people, heat_pump, ev, in_grid FROM houses")
