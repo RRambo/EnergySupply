@@ -9,9 +9,6 @@
 }
 
 .base-shell {
-  background-position: center;
-  background-size: cover;
-  background-repeat: no-repeat;
   flex-grow: 1;
   padding: 20px;
   gap: 20px;
@@ -25,11 +22,11 @@
   height: 100%;
   width: 100%;
   overflow: hidden;
-  flex-grow: 1;
+  flex-grow: 1; 
 }
 
 .neighborhood-container {
-  background-image: url("./assets/backGround.png");
+  /* background-image: url("./assets/backGround.png"); */
   background-position: top center;
   background-size: contain;
   background-repeat: no-repeat;

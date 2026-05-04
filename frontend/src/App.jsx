@@ -30,19 +30,19 @@ function App() {
       <div className="app-container">
         <aside className="sidebar">
           <Panel width="100%" height="auto">
-            <h2>Neighborhood Summary</h2>
+            <h3>Neighborhood Summary</h3>
             <p>Total Generation {activeData.total_generation}</p>
             <p>Total Consumption {activeData.total_consumption}</p>
             <hr></hr>
             <b>Net Flow {activeData.net_flow}</b>
           </Panel>
           <Panel width="80%" height="auto">
-            <h2>Current Price</h2>
-            <h2>{activeData.current_price} €/kWh</h2>
+            <h3>Current Price</h3>
+            <h3>{activeData.current_price} €/kWh</h3>
           </Panel>
           <Panel width="80%" height="auto">
-            <h2>Average (Last Year)</h2>
-            <h2>{activeData.average_price} €/kWh</h2>
+            <h3>Average (Last Year)</h3>
+            <h3>{activeData.average_price} €/kWh</h3>
           </Panel>
           <details>
             <summary>Calender</summary>
@@ -50,11 +50,9 @@ function App() {
           </details>
         </aside>
 
-        <main className="base-shell">
-          <div className="neighborhood-container">
+          <main className="neighborhood-container">
             <Neighborhood />
-          </div>
-        </main>
+          </main>
       </div>
       <Slider value={currentDay} onChange={setCurrentDay}></Slider>
     </div>
