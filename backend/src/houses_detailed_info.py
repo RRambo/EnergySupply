@@ -81,12 +81,9 @@ def generate_houses_details(only_savings_gains: bool = False, config: dict = DEF
         )
 
         savings_by_house_id = {
-
             house["id"]: house
-
             for house in houses_with_savings
-
-}
+        }
 
         day_entry = {
             "day": day,
