@@ -4,9 +4,7 @@ import eVehicleIcon from '../assets/eVehicle.png'
 import './style/House.css'
 
 function House({
-    houseNumber,
     shape,
-
     householdData,
     householdPowerData
 }) {

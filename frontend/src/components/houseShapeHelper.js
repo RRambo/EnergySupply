@@ -4,7 +4,7 @@ rotation = rotation of house
 solarPosition = position of solar panel relative to house
 positionPercent = position of house on the map
 */
-
+// Aspect ratio of the background image (neighborhood)
 const CONTAINER_WIDTH = 1266
 const CONTAINER_HEIGHT = 976
 
@@ -192,6 +192,7 @@ Object.values(houseShapes).forEach(shape => {
   shape.height = box.height
 
   // Calculates the size of the houses relative to the neighborhood-container
+  // This is needed so that the house sizes can scale down with smaller neighborhood-containers (smaller screens)
   shape.widthPercent = box.width / CONTAINER_WIDTH * 100
   shape.heightPercent = box.height / CONTAINER_HEIGHT * 100
 })
