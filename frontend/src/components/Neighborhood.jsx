@@ -148,10 +148,12 @@ function Neighborhood() {
                 return (
                     <div key={id}
                         style={{
+                            // Position of the house relative to the parent container (neighborhood)
                             position: 'absolute',
                             left: `${left}%`,
                             top: `${top}%`,
                             pointerEvents: 'auto',
+                            // Size of the house relative to the parent container (house_width_px / container_width_px * 100)
                             width: `${shape.widthPercent}%`,
                             height: `${shape.heightPercent}%`,
                             // CAN'T add the rotation here!!!
@@ -160,9 +162,7 @@ function Neighborhood() {
                         }}
                     >
                         <House
-                            houseNumber={id}
                             shape={shape}
-
                             householdData={singleHouseholdData}
                             householdPowerData={singleHouseholdPowerData}
                         />
