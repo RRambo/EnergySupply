@@ -4,9 +4,11 @@ import eVehicleIcon from '../assets/eVehicle.png'
 import './style/House.css'
 
 function House({
+    houseId,
     shape,
     householdData,
-    householdPowerData
+    householdPowerData,
+    handleOpting
 }) {
     const [showInfo, setShowInfo] = useState(false)
     const infoboxRef = useRef(null)
@@ -41,6 +43,13 @@ function House({
         })
     }
 
+    const handleHouseClick = async () => {
+        // Used to set the house color
+        householdData.part_of_grid = householdData.part_of_grid ? false : true
+        // Updates backend and refetches all power data
+        handleOpting({ id: houseId, in_grid: householdData.part_of_grid })
+    }
+
     useEffect(() => {
         checkInfoboxLocation()
     }, [showInfo])
@@ -52,6 +61,7 @@ function House({
             className='house-icon'
             onMouseEnter={() => setShowInfo(true)}
             onMouseLeave={() => setShowInfo(false)}
+            onClick={(handleHouseClick)}
         >
             {/* House SVG */}
             <svg
@@ -67,11 +77,11 @@ function House({
 
                 <polygon
                     points={polygonPoints}
-                    fill={householdData.opted ? '#828282' : '#D9D9D9'}
+                    fill={householdData.part_of_grid ? '#828282' : '#D9D9D9'}
                 />
 
                 {/* Solar panel */}
-                {householdData.solar_p && (
+                {householdData.has_solar && (
                     <g transform={`translate(${shape.solarPosition.x} ${shape.solarPosition.y}) scale(${1.8})`}>
                         <rect
                             x='0.75'
@@ -103,7 +113,7 @@ function House({
                             <div className='stat-title'>CURRENT</div>
 
                             {/* Only displays power production if house has solar panel */}
-                            {householdData.solar_p && (
+                            {!!householdData.has_solar && (
                                 <div className='stat-row'>
                                     <span className='stat-label'>Power Production</span>
                                     <span className='stat-value'>
@@ -121,7 +131,7 @@ function House({
                                 </span>
                             </div>
 
-                            {householdData.solar_p
+                            {householdData.part_of_grid && (!!householdData.has_solar
                                 ? (
                                     <div className='stat-row'>
                                         <span className='stat-label'>Gains</span>
@@ -140,14 +150,14 @@ function House({
                                         </span>
                                     </div>
                                 )
-                            }
+                            )}
                         </div>
 
                         <div className='stat-column total'>
                             <div className='stat-title'>TOTAL FOR THE DAY</div>
 
                             {/* Only displays power production if house has solar panel */}
-                            {householdData.solar_p && (
+                            {!!householdData.has_solar && (
                                 <div className='stat-row'>
                                     <span className='stat-label'>Power Production</span>
                                     <span className='stat-value'>
@@ -165,7 +175,7 @@ function House({
                                 </span>
                             </div>
 
-                            {householdData.solar_p
+                            {householdData.part_of_grid && (!!householdData.has_solar
                                 ? (
                                     <div className='stat-row'>
                                         <span className='stat-label'>Gains</span>
@@ -185,13 +195,13 @@ function House({
                                         </span>
                                     </div>
                                 )
-                            }
+                            )}
                         </div>
                     </div>
 
                     <div className='icons-row'>
                         {/* Resident icon */}
-                        {householdData.people > 1
+                        {householdData.persons > 1
                             ? (
                                 <svg
                                     width='30'
@@ -210,7 +220,7 @@ function House({
                                     {/* Number of residents */}
                                     <foreignObject x='12' y='12' width='14' height='14'>
                                         <div className='icon-count person-count'>
-                                            {householdData.people}
+                                            {householdData.persons}
                                         </div>
                                     </foreignObject>
                                 </svg>
@@ -232,22 +242,22 @@ function House({
                             )}
 
                         {/* Heat Pump icon */}
-                        {householdData.heat_pump && (<img className='small-icon' src={heatPumpIcon}></img>)}
+                        {householdData.has_heat_pump && (<img className='small-icon' src={heatPumpIcon}></img>)}
 
                         {/* Electric Vehicle icon */}
-                        {householdData.ev > 0 && (
+                        {householdData.ev_count > 0 && (
                             <div style={{ position: 'relative', display: 'flex' }}>
                                 <img className='small-icon' src={eVehicleIcon}
-                                    style={{ marginLeft: householdData.heat_pump ? 0 : '4px' }}>
+                                    style={{ marginLeft: householdData.has_heat_pump ? 0 : '4px' }}>
                                 </img>
                                 {/* Number of electric vehicles */}
-                                {householdData.ev > 1 && (
+                                {householdData.ev_count > 1 && (
                                     <div className='icon-count ev-count' style={{
                                         position: 'absolute',
                                         top: '11px',
                                         left: '17px'
                                     }}>
-                                        {householdData.ev}
+                                        {householdData.ev_count}
                                     </div>
                                 )}
                             </div>

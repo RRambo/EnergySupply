@@ -1,146 +1,140 @@
 import React, { useEffect, useState } from 'react'
 import House from './House'
-
 import { houseShapes } from './houseShapeHelper'
 import './style/Neighborhood.css'
 
-function Neighborhood() {
+function Neighborhood({ currentDay }) {
     const [error, setError] = useState('')
-    const [loading, setLoading] = useState(false)
+    const [loading, setLoading] = useState(true)
     const [householdData, setHouseholdData] = useState([])
     const [householdPowerData, setHouseholdPowerData] = useState([])
+    const [currentHouseholdPowerData, setCurrentHouseholdPowerData] = useState([])
 
     const fetchHouseInfo = async () => {
+        // Gets the household details of all the houses once on page load
         try {
-            // fetch household data from backend
-            /*
-            const res = await fetch(`/endpoint`)
-            const data = await res.json()
+            const res = await fetch('/houses')
 
-            if (!res.ok) {
-                setError(data.error)
-                return
+            if (res.ok) {
+                const data = await res.json()
+                setHouseholdData(data)
+                return data
             } else {
-                setHouseData(data)
+                const data = await res.json()
+                setError(data.error)
+                console.error('Failed to fetch household data')
+                return null
             }
-            */
-            
-            // mocked values for testing (only has first 2 houses)
-            const data = [
-                {
-                    id: '1',
-                    solar_p: true,
-                    people: 1,
-                    heat_pump: true,
-                    ev: 0,
-                    opted: true
-                },
-                {
-                    id: '3',
-                    solar_p: false,
-                    people: 2,
-                    heat_pump: false,
-                    ev: 1,
-                    opted: false
-                }
-            ]
-            setHouseholdData(data)
         } catch {
             setError('Connection error')
-        } finally {
-            setLoading(false)
+            return null
         }
     }
 
-    const handleInfoChange = async () => {
+    const fetchHousePowerDetails = async () => {
+        // Gets the powerdetails of all the days and all opted in houses once on page load
         try {
-            // fetch household data from backend
-            /*
-            const res = await fetch(`/endpoint`)
+            const res = await fetch('/houses-details')
             const data = await res.json()
 
-            if (!res.ok) {
-                setError(data.error)
-                return
+            if (res.ok) {
+                setHouseholdPowerData(data)
+                return data
             } else {
-                setDayPowerData(data)
+                setError(data.error)
+                console.error('Failed to fetch household power related data')
+                return null
             }
-            */
-
-            // mocked values for testing (only has first 2 houses)
-            const data = [
-                {
-                    id: '1',
-                    cur_power_gen: 0.0,
-                    cur_power_cons: 1.0,
-                    cur_savings: 6.0,
-                    cur_gains: 6.0,
-                    total_power_gen: 0.0,
-                    total_power_cons: 0.0,
-                    total_savings: 10.0,
-                    total_gains: 64.0,
-                    total_power_gen: 0.0
-                },
-                {
-                    id: '3',
-                    cur_power_gen: 0.0,
-                    cur_power_cons: 1.0,
-                    cur_savings: 6.0,
-                    cur_gains: 6.0,
-                    total_power_gen: 0.0,
-                    total_power_cons: 0.0,
-                    total_savings: 10.0,
-                    total_gains: 64.0,
-                    total_power_gen: 0.0
-                }
-            ]
-            setHouseholdPowerData(data)
         } catch {
             setError('Connection error')
-        } finally {
-            setLoading(false)
+            return null
         }
+    }
+
+    const handleDayChange = (data = householdPowerData) => {
+        // Finds data for a specific day from the originally fetched data
+        if (data && data.length > 0) {
+            const newDayData = data.find((e) => e.day == currentDay)
+            setCurrentHouseholdPowerData(newDayData)
+        }
+    }
+
+    const handleOpting = async ({ id, in_grid }) => {
+        try {
+            const reqBody = { id: id, in_grid: in_grid }
+            const res = await fetch('/update-grid', {
+                method: 'POST',
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(reqBody)
+            })
+
+            if (res.ok) {
+                await updatePowerData()
+            } else {
+                setError(data.error)
+                console.error('Failed to update household grid opting')
+                return null
+            }
+        } catch {
+            setError('Connection error')
+            return null
+        }
+    }
+
+    const updatePowerData = async () => {
+        // Reloads all powerdata after a house has opted in/out of the grid
+        setError('')
+        setLoading(true)
+        const powerData = await fetchHousePowerDetails()
+        handleDayChange(powerData)
+        setLoading(false)
     }
 
     useEffect(() => {
+        // Initially loads all data on first page render
+        // (is run twice for some reason)
+        const loadData = async () => {
+            setError('')
+            setLoading(true)
+            const [houseData, powerData] = await Promise.all([fetchHouseInfo(), fetchHousePowerDetails()])
+            handleDayChange(powerData)
+            setLoading(false)
+        }
+        loadData()
+    }, [])
+
+    useEffect(() => {
+        // Changes the power data when the day has been changed
         setError('')
         setLoading(true)
-        fetchHouseInfo()
-        handleInfoChange()
-    }, [])
+        handleDayChange()
+        setLoading(false)
+    }, [currentDay])
+
+    useEffect(() => {
+        // Makes sure all the necessary data has been fetched and parsed/formatted before rendering the neighborhood
+        if (householdData.length === 0 || householdPowerData.length === 0 || !currentHouseholdPowerData) {
+            setLoading(true)
+        } else {
+            setLoading(false)
+        }
+    }, [error, householdData, householdPowerData, currentHouseholdPowerData, houseShapes])
+
+    if (loading) {
+        return (
+            <div className='loader-wrapper'>
+                <div className='loader' />
+                <p className='loader-text'>Loading neighborhood data…</p>
+                {error && <p className='card-error'>{error}</p>}
+            </div>
+        )
+    }
 
     return (
         <>
-            {!loading && Object.entries(houseShapes).map(([id, shape]) => {
-                let singleHouseholdData = householdData.find((e) => e.id === id)                
-                let singleHouseholdPowerData = householdPowerData.find((e) => e.id === id)
-
-                if (!singleHouseholdData) {
-                    // ∨∨∨ mocked values for testing
-                    singleHouseholdData = {
-                        id: id,
-                        solar_p: true,
-                        people: 12,
-                        heat_pump: true,
-                        ev: 2,
-                        opted: false
-                    }
-                }
-
-                if (!singleHouseholdPowerData) {
-                    // ∨∨∨ mocked values for testing
-                    singleHouseholdPowerData = {
-                        id: id,
-                        cur_power_gen: 12.8,
-                        cur_power_cons: 12.8,
-                        cur_savings: 3.4,
-                        cur_gains: 3.4,
-                        total_power_gen: 12.8,
-                        total_power_cons: 112.8,
-                        total_savings: 13.4,
-                        total_gains: 13.4
-                    }
-                }
+            {Object.entries(houseShapes).map(([id, shape]) => {
+                const singleHouseholdData = householdData.find((e) => e.id === id)
+                const singleHouseholdPowerData = currentHouseholdPowerData.houses?.[id] || {}
 
                 const left = shape.positionPercent.x
                 const top = shape.positionPercent.y
@@ -162,9 +156,11 @@ function Neighborhood() {
                         }}
                     >
                         <House
+                            houseId={id}
                             shape={shape}
                             householdData={singleHouseholdData}
                             householdPowerData={singleHouseholdPowerData}
+                            handleOpting={handleOpting}
                         />
                     </div>
                 )

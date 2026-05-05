@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { use, useState } from "react";
 import "./App.css";
 import Neighborhood from "./components/Neighborhood";
 import backGround from "./assets/backGround.png";
@@ -7,10 +7,8 @@ import Slider from "./components/slider";
 import Calendar from "./components/calender";
 import dayjs from "dayjs";
 import usePanelDetails from "./Fetch";
-import { use } from "react";
 
 function App() {
-  // const [count, setCount] = useState(0)
   const [currentDay, setCurrentDay] = useState(1);
   const panelDetails = usePanelDetails();
   const dayData = panelDetails.find((d) => d.day === currentDay) || {};
@@ -18,7 +16,7 @@ function App() {
 
   return (
     <div className="main-wrapper">
-      <p>{console.log(activeData)}</p>
+      {console.log(activeData)}
       <Panel height="100px" width="80%">
         <div className="header-inner">
           <h2 style={{ margin: 0 }}>Neighborhood Energy Simulation</h2>
@@ -50,9 +48,9 @@ function App() {
           </details>
         </aside>
 
-          <main className="neighborhood-container">
-            <Neighborhood />
-          </main>
+        <main className="neighborhood-container">
+          <Neighborhood currentDay={currentDay} />
+        </main>
       </div>
       <Slider value={currentDay} onChange={setCurrentDay}></Slider>
     </div>
