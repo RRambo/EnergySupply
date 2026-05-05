@@ -80,6 +80,14 @@ def generate_houses_details(only_savings_gains: bool = False, config: dict = DEF
             config=config,
         )
 
+        savings_by_house_id = {
+
+            house["id"]: house
+
+            for house in houses_with_savings
+
+}
+
         day_entry = {
             "day": day,
             "houses": {},
@@ -100,24 +108,24 @@ def generate_houses_details(only_savings_gains: bool = False, config: dict = DEF
         else:
             for house in calculated_houses:
                 house_id = house["id"]
+
+                savings_data = savings_by_house_id.get(house_id, {})
+
+                current_savings = savings_data.get("current_savings", 0.0)
+                current_gains = savings_data.get("current_gains", 0.0)
+
                 total_values[house_id]["total_power_gen"] += house["current_generation"]
-                total_values[house_id]["total_power_cons"] += house[
-                    "current_consumption"
-                ]
-                total_values[house_id]["total_savings"] += house["current_savings"]
-                total_values[house_id]["total_gains"] += house["current_gains"]
+                total_values[house_id]["total_power_cons"] += house["current_consumption"]
+                total_values[house_id]["total_savings"] += current_savings
+                total_values[house_id]["total_gains"] += current_gains
 
                 day_entry["houses"][house_id] = {
                     "cur_power_gen": round(house["current_generation"], 2),
                     "cur_power_cons": round(house["current_consumption"], 2),
-                    "cur_savings": round(house["current_savings"], 2),
-                    "cur_gains": round(house["current_gains"], 2),
-                    "total_power_gen": round(
-                        total_values[house_id]["total_power_gen"], 2
-                    ),
-                    "total_power_cons": round(
-                        total_values[house_id]["total_power_cons"], 2
-                    ),
+                    "cur_savings": round(current_savings, 2),
+                    "cur_gains": round(current_gains, 2),
+                    "total_power_gen": round(total_values[house_id]["total_power_gen"], 2),
+                    "total_power_cons": round(total_values[house_id]["total_power_cons"], 2),
                     "total_savings": round(total_values[house_id]["total_savings"], 2),
                     "total_gains": round(total_values[house_id]["total_gains"], 2),
                 }
