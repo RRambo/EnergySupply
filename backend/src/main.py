@@ -10,7 +10,7 @@ app = FastAPI()  # start with:  uvicorn src.main:app --reload
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"], # Im echten Projekt hier ["http://localhost:5173"]
+    allow_origins=["*"], 
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
