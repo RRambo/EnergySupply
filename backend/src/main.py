@@ -10,7 +10,7 @@ app = FastAPI()  # start with:  uvicorn src.main:app --reload
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"], 
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -34,12 +34,17 @@ def get_houses():
 
 @app.get("/houses-details")
 def get_houses_details():
-    return generate_houses_details()
+    return generate_houses_details(only_savings_gains=False)
 
 
 @app.get("/panel-details")
 def get_panel_details():
     return generate_panel_details()
+
+
+@app.get("/savings-gains")
+def get_savings_gains_details():
+    return generate_houses_details(only_savings_gains=True)
 
 
 @app.post("/update-grid")  # needs {"id": "7", "in_grid": true}
@@ -49,4 +54,14 @@ def update_grid(data: GridUpdate):
     if not success:
         raise HTTPException(status_code=404, detail="House not found")
 
-    return {"message": "Grid status updated", "id": data.id, "in_grid": data.in_grid}
+    return {
+        "message": "Grid status updated",
+        "id": data.id,
+        "in_grid": data.in_grid,
+    }
+
+
+# frontend
+# POST
+# GET /savings-gains
+# GET /panel-details
