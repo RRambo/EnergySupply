@@ -6,7 +6,7 @@ DEFAULTS = {
     "performance_ratio": 0.8,
     "average_german_price": 0.40,
     "base_grid_price": 0.105,
-    "min_grid_price": 0.05,
+    "min_grid_price": 0.04,
     "max_grid_price": 0.40,
     "price_sensitivity": 0.5,
     "consumption_per_person_per_day": 4.1,
