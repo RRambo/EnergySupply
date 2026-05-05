@@ -6,9 +6,9 @@ DEFAULTS = {
     "performance_ratio": 0.8,
     "average_german_price": 0.40,
     "base_grid_price": 0.105,
-    "min_grid_price": 0.08,
-    "max_grid_price": 0.50,
-    "price_sensitivity": 0.5,
+    "min_grid_price": 0.05,
+    "max_grid_price": 0.40,
+    "price_sensitivity": 0.15,
     "consumption_per_person_per_day": 4.1,
     "ev_consumption_per_day": 6.25,
     "ev_cold_threshold": 5,
@@ -110,9 +110,11 @@ def calculate_current_price(
     net_flow_ratio = net_flow / total_consumption
 
     raw_price = config["base_grid_price"] * (
-        1 - config["price_sensitivity"] * net_flow_ratio
+        config["price_sensitivity"] * net_flow_ratio
     )
-
+    
+    print(raw_price)
+    
     return clamp(raw_price, config["min_grid_price"], config["max_grid_price"])
 
 def calculate_house_savings(
@@ -227,6 +229,8 @@ def calculate_grid_state(
     current_grid_price = calculate_current_price(
         net_flow, totals["total_consumption"], config
     )
+    
+    print(current_grid_price)
 
     return {
         "total_generation": totals["total_generation"],
