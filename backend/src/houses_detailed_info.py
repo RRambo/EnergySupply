@@ -40,7 +40,6 @@ def generate_houses_details(config: dict = DEFAULTS):
 
         for house in houses:
             current_generation = calculate_current_generation(house, solar_radiation, config=config)
-
             current_consumption = calculate_current_consumption(house, temperature, config=config)
 
             calculated_houses.append(

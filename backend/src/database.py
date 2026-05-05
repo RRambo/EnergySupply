@@ -79,15 +79,17 @@ def get_all_houses():
     conn.close()
 
     response = []
+
     for id, solar_p, people, heat_pump, ev, in_grid in rows:
         response.append(
             {
                 "id": id,
-                "solar_p": solar_p,
-                "people": people,
-                "heat_pump": heat_pump,
-                "ev": ev,
-                "in_grid": bool(in_grid),
+                "has_solar": solar_p,
+                "persons": people,
+                "has_heat_pump": bool(heat_pump),
+                "ev_count": ev,
+                "part_of_grid": bool(in_grid),
             }
         )
+
     return response

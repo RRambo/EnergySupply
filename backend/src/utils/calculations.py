@@ -25,7 +25,7 @@ def clamp(value: float, min_value: float, max_value: float) -> float:
 def calculate_current_generation(
     house: Dict[str, Any], solar_radiation: float, config: Dict[str, Any] = DEFAULTS
 ) -> float:
-    if not house.get("has_solar", False):
+    if house.get("has_solar") == 0:
         return 0.0
 
     return (
@@ -147,7 +147,7 @@ def calculate_house_savings(
     available_local_energy = min(total_surplus, total_remaining_demand)
 
     result = []
-
+    
     for house in prepared_houses:
         if total_remaining_demand > 0:
             local_energy_received = (
@@ -166,10 +166,19 @@ def calculate_house_savings(
             local_energy_received * current_grid_price
             + external_energy_needed * config["average_german_price"]
         )
+        
+        solar_p = house.get("has_solar")
+        has_solar = False        
+        if(solar_p == 1):
+            has_solar = True
+        else: has_solar = False
 
-        current_savings = normal_cost - local_grid_cost
-
-        current_gains = house["surplus_solar"] * current_grid_price
+        if has_solar:
+            current_savings = 0.0
+            current_gains = house["surplus_solar"] * current_grid_price
+        else:
+            current_savings = normal_cost - local_grid_cost
+            current_gains = 0.0
 
         result.append(
             {

@@ -3,10 +3,6 @@ from src.utils.calculations import calculate_grid_state, DEFAULTS
 from src.day_data import get_daily_data
 from src.database import get_all_houses
 
-def load_avg_daily_data(path: str = "backend/data/avg_daily_data.json") -> list[dict]:
-    with open(path, "r", encoding="utf-8") as file:
-        return json.load(file)
-
 def generate_panel_day(houses: list[dict], solar_radiation: float, temperature: float, config: dict = DEFAULTS,):
     grid_state = calculate_grid_state(houses=houses, solar_radiation=solar_radiation, temperature=temperature, config=config,)
     return {
