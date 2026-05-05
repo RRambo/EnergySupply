@@ -2,13 +2,13 @@ from typing import List, Dict, Any
 
 
 DEFAULTS = {
-    "installed_power_kwp": 8,
+    "installed_power_kwp": 1,
     "performance_ratio": 0.8,
     "average_german_price": 0.40,
     "base_grid_price": 0.105,
     "min_grid_price": 0.05,
     "max_grid_price": 0.40,
-    "price_sensitivity": 0.15,
+    "price_sensitivity": 0.5,
     "consumption_per_person_per_day": 4.1,
     "ev_consumption_per_day": 6.25,
     "ev_cold_threshold": 5,
@@ -108,13 +108,14 @@ def calculate_current_price(
         return config["min_grid_price"]
 
     net_flow_ratio = net_flow / total_consumption
+    print("net_flow_ratio")
+    print(net_flow_ratio)
 
     raw_price = config["base_grid_price"] * (
-        config["price_sensitivity"] * net_flow_ratio
+        1 - config["price_sensitivity"] * net_flow_ratio
     )
-    
-    print(raw_price)
-    
+    print("raw_price")
+    print(raw_price)    
     return clamp(raw_price, config["min_grid_price"], config["max_grid_price"])
 
 def calculate_house_savings(
@@ -230,6 +231,7 @@ def calculate_grid_state(
         net_flow, totals["total_consumption"], config
     )
     
+    print("current price")
     print(current_grid_price)
 
     return {
