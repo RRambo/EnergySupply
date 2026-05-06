@@ -8,21 +8,13 @@
   align-items: center;
 }
 
-.base-shell {
-  flex-grow: 1;
-  padding: 20px;
-  gap: 20px;
-  display: flex;
-  justify-content: center;
-  /* align-items: flex-start; */
-}
-
 .app-container {
   display: flex;
+  flex-direction: row;
   height: 100%;
   width: 100%;
   overflow: hidden;
-  flex-grow: 1; 
+  flex-grow: 1;
 }
 
 .neighborhood-container {
@@ -35,13 +27,14 @@
   justify-content: center;
   align-items: flex-start;
   aspect-ratio: 1266 / 976;
+  overflow: hidden;
 }
 
 .sidebar {
   padding: 20px;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 3px;
   flex-shrink: 0;
   overflow: hidden;
 }

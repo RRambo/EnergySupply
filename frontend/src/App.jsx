@@ -29,28 +29,57 @@ function App() {
         <aside className="sidebar">
           <Panel width="100%" height="auto">
             <h3>Neighborhood Summary</h3>
-            <p>Total Generation {activeData.total_generation}</p>
-            <p>Total Consumption {activeData.total_consumption}</p>
+            <div
+              style={{
+                /* in order to have the values on the right side, and the variable names on the left*/
+                display: "flex",
+                justifyContent: "space-between",
+              }}
+            >
+              <span>Total Generation</span>
+              <span>{activeData.total_generation} kWh</span>
+            </div>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+              }}
+            >
+              <span>Total Consumption</span>
+              <span>{activeData.total_consumption} kWh</span>
+            </div>
             <hr></hr>
-            <b>Net Flow {activeData.net_flow}</b>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+              }}
+            >
+              <b>Net Flow</b>
+              <b>{activeData.net_flow} kWh</b>
+            </div>
           </Panel>
           <Panel width="80%" height="auto">
             <h3>Current Price</h3>
-            <h3>{activeData.current_price} €/kWh</h3>
+            <h3>{(activeData.current_price * 100).toFixed(0)} ct/kWh</h3>
           </Panel>
           <Panel width="80%" height="auto">
-            <h3>Average (Last Year)</h3>
-            <h3>{activeData.average_price} €/kWh</h3>
+            <h3>Grid Average (Last Year)</h3>
+            <h3>{activeData.average_price * 100} ct/kWh</h3>
           </Panel>
-          <details>
-            <summary>Calender</summary>
-            <Calendar value={currentDay} onChange={setCurrentDay} />
-          </details>
+          <Panel width="80%" height="auto">
+            <h3>Provider Average (Last Year)</h3>
+            <h3>40 ct/kWh</h3>
+          </Panel>
         </aside>
 
         <main className="neighborhood-container">
           <Neighborhood currentDay={currentDay} />
         </main>
+        <details>
+          <summary>Calendar</summary>
+          <Calendar value={currentDay} onChange={setCurrentDay} />
+        </details>
       </div>
       <Slider value={currentDay} onChange={setCurrentDay}></Slider>
     </div>
