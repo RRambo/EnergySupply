@@ -10,7 +10,7 @@ def generate_panel_day(houses: list[dict], solar_radiation: float, temperature: 
         "total_consumption": round(grid_state["total_consumption"], 2),
         "net_flow": round(grid_state["net_flow"], 2),
         "current_price": round(grid_state["current_grid_price"], 3),
-        "average_price": config["average_german_price"],
+        "provider_price": config["average_german_price"],
     }
 
 
