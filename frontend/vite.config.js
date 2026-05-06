@@ -10,6 +10,7 @@ export default defineConfig({
       '/houses-details': 'http://localhost:8000',
       '/panel-details': 'http://localhost:8000',
       '/update-grid': 'http://localhost:8000',
+      '/savings-gains': 'http://localhost:8000',
     },
   },
 })

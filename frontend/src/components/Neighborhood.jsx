@@ -51,6 +51,54 @@ function Neighborhood({ currentDay }) {
         }
     }
 
+    const fetchSavingsGains = async () => {
+        try {
+            const res = await fetch('/savings-gains')
+            const data = await res.json()
+
+            if (!res.ok) {
+                setError(data.error)
+                console.error('Failed to fetch savings/gains')
+                return null
+            }
+            return data
+        } catch {
+            setError('Connection error')
+            return null
+        }
+    }
+
+    const mergeDaySavings = (currentDayData, savingsDayData) => {
+        if (!currentDayData) {
+            return savingsDayData
+        }
+        if (!savingsDayData) {
+            return currentDayData
+        }
+
+        const mergedHouses = {
+            ...currentDayData.houses,
+            ...Object.fromEntries(
+                Object.entries(savingsDayData.houses || {}).map(([houseId, savingsGains]) => [
+                    houseId,
+                    {
+                        ...currentDayData.houses?.[houseId],
+                        ...savingsGains,
+                    },
+                ])
+            ),
+        }
+
+        return {
+            ...currentDayData,
+            houses: mergedHouses,
+        }
+    }
+
+    const getCurrentDaySavings = (data = []) => {
+        return data.find((e) => e.day === currentDay) || null
+    }
+
     const handleDayChange = (data = householdPowerData) => {
         // Finds data for a specific day from the originally fetched data
         if (data && data.length > 0) {
@@ -59,9 +107,8 @@ function Neighborhood({ currentDay }) {
         }
     }
 
-    const handleOpting = async ({ id, in_grid }) => {
+    const handleOpting = async (reqBody) => {
         try {
-            const reqBody = { id: id, in_grid: in_grid }
             const res = await fetch('/update-grid', {
                 method: 'POST',
                 headers: { "Content-Type": "application/json" },
@@ -71,6 +118,7 @@ function Neighborhood({ currentDay }) {
             if (res.ok) {
                 await updatePowerData()
             } else {
+                const data = await res.json()
                 setError(data.error)
                 console.error('Failed to update household grid opting')
                 return null
@@ -82,17 +130,30 @@ function Neighborhood({ currentDay }) {
     }
 
     const updatePowerData = async () => {
-        // Reloads all powerdata after a house has opted in/out of the grid
         setError('')
         setLoading(true)
-        const powerData = await fetchHousePowerDetails()
+        // ∨∨∨ Reloads all powerdata after a house has opted in/out of the grid
+        /*const powerData = await fetchHousePowerDetails()
         handleDayChange(powerData)
-        setLoading(false)
+        setLoading(false)*/
+
+        // ∨∨∨ Reloads savings and gains after a house has opted in/out of the grid and merges that with the already fetched power data (a little faster)
+        const savingsData = await fetchSavingsGains()
+        const currentDaySavings = getCurrentDaySavings(savingsData)
+
+        if (currentDaySavings) {
+            setCurrentHouseholdPowerData((prev) => mergeDaySavings(prev, currentDaySavings))
+            setHouseholdPowerData((prev) =>
+                prev.map((e) =>
+                    e.day === currentDay ? mergeDaySavings(e, currentDaySavings) : e
+                )
+            )
+        }
     }
 
     useEffect(() => {
         // Initially loads all data on first page render
-        // (is run twice for some reason)
+        // (is run twice in dev mode, due to StrictMode in main.jsx, which is used to detect bugs)
         const loadData = async () => {
             setError('')
             setLoading(true)
