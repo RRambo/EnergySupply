@@ -45,3 +45,10 @@
   justify-content: center;
   height: 100%;
 }
+
+.footer {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  justify-content: center;
+}

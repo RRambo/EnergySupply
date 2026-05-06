@@ -1,15 +1,21 @@
-import { use, useState } from "react";
+import { useState, useEffect } from "react";
 import "./App.css";
+import dayjs from "dayjs";
 import Neighborhood from "./components/Neighborhood";
 import backGround from "./assets/backGround.png";
 import Panel from "./components/panel";
 import Slider from "./components/slider";
 import Calendar from "./components/calender";
-import dayjs from "dayjs";
-import usePanelDetails from "./Fetch";
+import PlayButton from "./components/playButton";
+import usePanelDetails from "./hooks/Fetch";
+import useYearSimulation from "./hooks/simulateYear";
 
 function App() {
-  const [currentDay, setCurrentDay] = useState(1);
+  // const [currentDay, setCurrentDay] = useState(1);
+
+  const { currentDay, setCurrentDay, isPlaying, toggleSimulation } =
+    useYearSimulation();
+
   const panelDetails = usePanelDetails();
   const dayData = panelDetails.find((d) => d.day === currentDay) || {};
   const activeData = dayData && dayData.panel ? dayData.panel : {};
@@ -81,7 +87,13 @@ function App() {
           <Calendar value={currentDay} onChange={setCurrentDay} />
         </details>
       </div>
-      <Slider value={currentDay} onChange={setCurrentDay}></Slider>
+      <footer className="footer">
+        <PlayButton
+          isPlaying={isPlaying}
+          onClick={toggleSimulation}
+        ></PlayButton>
+        <Slider value={currentDay} onChange={setCurrentDay}></Slider>
+      </footer>
     </div>
   );
 }
