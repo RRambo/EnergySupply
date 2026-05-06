@@ -12,7 +12,7 @@ const Slider = ({ value, onChange }) => {
 
   const handleChange = (e) => {
     const value = parseInt(e.target.value);
-    if (onChange) onChange(value); // gibt den tag an app.jsx weiter
+    if (onChange) onChange(value); // passes the day to the app.jsx
   };
 
   return (
